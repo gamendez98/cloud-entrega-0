@@ -5,7 +5,7 @@ import dataclasses
 
 
 @dataclasses.dataclass()
-class User:
+class Person:
     id: int
     username: str
     email: str

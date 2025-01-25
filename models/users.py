@@ -11,8 +11,13 @@ from models import models
 
 
 CREATE_USER = """-- name: create_user \\:one
-INSERT INTO users (username, email, password_hash) VALUES (:p1, :p2, :p3)
+INSERT INTO persons (username, email, password_hash) VALUES (:p1, :p2, :p3)
 RETURNING id, username, email, password_hash
+"""
+
+
+GET_PASSWORD_HASH = """-- name: get_password_hash \\:one
+SELECT password_hash FROM persons where persons.username = :p1
 """
 
 
@@ -20,29 +25,41 @@ class Querier:
     def __init__(self, conn: sqlalchemy.engine.Connection):
         self._conn = conn
 
-    def create_user(self, *, username: str, email: str, password_hash: str) -> Optional[models.User]:
+    def create_user(self, *, username: str, email: str, password_hash: str) -> Optional[models.Person]:
         row = self._conn.execute(sqlalchemy.text(CREATE_USER), {"p1": username, "p2": email, "p3": password_hash}).first()
         if row is None:
             return None
-        return models.User(
+        return models.Person(
             id=row[0],
             username=row[1],
             email=row[2],
             password_hash=row[3],
         )
+
+    def get_password_hash(self, *, username: str) -> Optional[str]:
+        row = self._conn.execute(sqlalchemy.text(GET_PASSWORD_HASH), {"p1": username}).first()
+        if row is None:
+            return None
+        return row[0]
 
 
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
-    async def create_user(self, *, username: str, email: str, password_hash: str) -> Optional[models.User]:
+    async def create_user(self, *, username: str, email: str, password_hash: str) -> Optional[models.Person]:
         row = (await self._conn.execute(sqlalchemy.text(CREATE_USER), {"p1": username, "p2": email, "p3": password_hash})).first()
         if row is None:
             return None
-        return models.User(
+        return models.Person(
             id=row[0],
             username=row[1],
             email=row[2],
             password_hash=row[3],
         )
+
+    async def get_password_hash(self, *, username: str) -> Optional[str]:
+        row = (await self._conn.execute(sqlalchemy.text(GET_PASSWORD_HASH), {"p1": username})).first()
+        if row is None:
+            return None
+        return row[0]

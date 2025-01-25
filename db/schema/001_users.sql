@@ -1,4 +1,4 @@
-CREATE TABLE users
+CREATE TABLE persons
 (
     id            SERIAL PRIMARY KEY,   -- Unique identifier for the user
     username      TEXT NOT NULL UNIQUE, -- Unique username for the user
