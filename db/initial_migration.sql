@@ -1,0 +1,5 @@
+CREATE USER entrega0 WITH PASSWORD 'entrega0';
+CREATE DATABASE entrega0;
+GRANT ALL PRIVILEGES ON DATABASE entrega0 TO entrega0;
+\c entrega0;
+GRANT ALL ON SCHEMA public TO entrega0;
