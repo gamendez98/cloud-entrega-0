@@ -7,6 +7,8 @@ from config import SECRET_KEY, ALGORITHM
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
+from models.models import Person
+
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
@@ -32,7 +34,7 @@ def verify_access_token(token: str):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
     check_blacklist(token)
     payload = verify_access_token(token)
     if payload is None:
@@ -41,7 +43,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return payload
+    username = payload.get("sub")
+    return username
 
 def get_current_token(token: str = Depends(oauth2_scheme)):
     check_blacklist(token)

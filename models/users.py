@@ -11,13 +11,31 @@ from models import models
 
 
 CREATE_USER = """-- name: create_user \\:one
-INSERT INTO persons (username, email, password_hash) VALUES (:p1, :p2, :p3)
+INSERT INTO persons (username, email, password_hash)
+VALUES (:p1, :p2, :p3)
 RETURNING id, username, email, password_hash, image_path
 """
 
 
 GET_PASSWORD_HASH = """-- name: get_password_hash \\:one
-SELECT password_hash FROM persons where persons.username = :p1
+SELECT password_hash
+FROM persons
+where persons.username = :p1
+"""
+
+
+GET_USER_BY_USERNAME = """-- name: get_user_by_username \\:one
+SELECT id, username, email, password_hash, image_path
+FROM persons
+WHERE username = :p1
+"""
+
+
+SAVE_IMAGE_PATH = """-- name: save_image_path \\:exec
+
+UPDATE persons
+SET image_path = :p1
+WHERE username = :p2
 """
 
 
@@ -43,6 +61,21 @@ class Querier:
             return None
         return row[0]
 
+    def get_user_by_username(self, *, username: str) -> Optional[models.Person]:
+        row = self._conn.execute(sqlalchemy.text(GET_USER_BY_USERNAME), {"p1": username}).first()
+        if row is None:
+            return None
+        return models.Person(
+            id=row[0],
+            username=row[1],
+            email=row[2],
+            password_hash=row[3],
+            image_path=row[4],
+        )
+
+    def save_image_path(self, *, image_path: Optional[str], username: str) -> None:
+        self._conn.execute(sqlalchemy.text(SAVE_IMAGE_PATH), {"p1": image_path, "p2": username})
+
 
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
@@ -65,3 +98,18 @@ class AsyncQuerier:
         if row is None:
             return None
         return row[0]
+
+    async def get_user_by_username(self, *, username: str) -> Optional[models.Person]:
+        row = (await self._conn.execute(sqlalchemy.text(GET_USER_BY_USERNAME), {"p1": username})).first()
+        if row is None:
+            return None
+        return models.Person(
+            id=row[0],
+            username=row[1],
+            email=row[2],
+            password_hash=row[3],
+            image_path=row[4],
+        )
+
+    async def save_image_path(self, *, image_path: Optional[str], username: str) -> None:
+        await self._conn.execute(sqlalchemy.text(SAVE_IMAGE_PATH), {"p1": image_path, "p2": username})
