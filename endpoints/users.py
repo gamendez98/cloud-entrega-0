@@ -1,4 +1,3 @@
-import os
 import shutil
 
 from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File
@@ -8,9 +7,7 @@ from concerns.authentication import create_access_token, check_password, hash_pa
     black_list_token, \
     get_current_token
 from concerns.user import get_profile_image_path
-from config import PROFILE_PICS_DIR
 from models.connection import get_connection
-from models.models import Person
 from models.users import Querier
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
