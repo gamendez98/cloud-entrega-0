@@ -1,7 +1,8 @@
 CREATE TABLE persons
 (
-    id            SERIAL PRIMARY KEY,   -- Unique identifier for the user
-    username      TEXT NOT NULL UNIQUE, -- Unique username for the user
-    email         TEXT NOT NULL UNIQUE, -- Unique email for the user
-    password_hash TEXT NOT NULL         -- Hashed password for secure storage
+    id            SERIAL PRIMARY KEY,
+    username      TEXT NOT NULL UNIQUE,
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    image_path    TEXT
 );

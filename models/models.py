@@ -2,6 +2,7 @@
 # versions:
 #   sqlc v1.27.0
 import dataclasses
+from typing import Optional
 
 
 @dataclasses.dataclass()
@@ -10,3 +11,4 @@ class Person:
     username: str
     email: str
     password_hash: str
+    image_path: Optional[str]

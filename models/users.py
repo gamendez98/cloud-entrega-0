@@ -12,7 +12,7 @@ from models import models
 
 CREATE_USER = """-- name: create_user \\:one
 INSERT INTO persons (username, email, password_hash) VALUES (:p1, :p2, :p3)
-RETURNING id, username, email, password_hash
+RETURNING id, username, email, password_hash, image_path
 """
 
 
@@ -34,6 +34,7 @@ class Querier:
             username=row[1],
             email=row[2],
             password_hash=row[3],
+            image_path=row[4],
         )
 
     def get_password_hash(self, *, username: str) -> Optional[str]:
@@ -56,6 +57,7 @@ class AsyncQuerier:
             username=row[1],
             email=row[2],
             password_hash=row[3],
+            image_path=row[4],
         )
 
     async def get_password_hash(self, *, username: str) -> Optional[str]:
