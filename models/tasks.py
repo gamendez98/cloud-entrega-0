@@ -2,6 +2,8 @@
 # versions:
 #   sqlc v1.27.0
 # source: tasks.sql
+import dataclasses
+import datetime
 from typing import AsyncIterator, Iterator, Optional
 
 import sqlalchemy
@@ -11,10 +13,24 @@ from models import models
 
 
 CREATE_TASK = """-- name: create_task \\:one
-
 INSERT INTO tasks (description, person_id, category_id)
 VALUES (:p1, :p2, :p3)
 RETURNING id, description, created_at, expected_finished_at, state, person_id, category_id
+"""
+
+
+DELETE_TASK = """-- name: delete_task \\:one
+DELETE
+FROM tasks
+WHERE id = :p1
+RETURNING id, description, created_at, expected_finished_at, state, person_id, category_id
+"""
+
+
+GET_TASK_BY_ID = """-- name: get_task_by_id \\:one
+SELECT id, description, created_at, expected_finished_at, state, person_id, category_id
+FROM tasks
+WHERE id = :p1
 """
 
 
@@ -25,12 +41,62 @@ FROM tasks
 """
 
 
+UPDATE_TASK = """-- name: update_task \\:one
+UPDATE tasks
+SET description          = :p1,
+    expected_finished_at = :p2,
+    state                = :p3,
+    person_id            = :p4,
+    category_id          = :p5
+WHERE id = :p6
+RETURNING id, description, created_at, expected_finished_at, state, person_id, category_id
+"""
+
+
+@dataclasses.dataclass()
+class UpdateTaskParams:
+    description: str
+    expected_finished_at: Optional[datetime.datetime]
+    state: models.State
+    person_id: Optional[int]
+    category_id: Optional[int]
+    id: int
+
+
 class Querier:
     def __init__(self, conn: sqlalchemy.engine.Connection):
         self._conn = conn
 
     def create_task(self, *, description: str, person_id: Optional[int], category_id: Optional[int]) -> Optional[models.Task]:
         row = self._conn.execute(sqlalchemy.text(CREATE_TASK), {"p1": description, "p2": person_id, "p3": category_id}).first()
+        if row is None:
+            return None
+        return models.Task(
+            id=row[0],
+            description=row[1],
+            created_at=row[2],
+            expected_finished_at=row[3],
+            state=row[4],
+            person_id=row[5],
+            category_id=row[6],
+        )
+
+    def delete_task(self, *, id: int) -> Optional[models.Task]:
+        row = self._conn.execute(sqlalchemy.text(DELETE_TASK), {"p1": id}).first()
+        if row is None:
+            return None
+        return models.Task(
+            id=row[0],
+            description=row[1],
+            created_at=row[2],
+            expected_finished_at=row[3],
+            state=row[4],
+            person_id=row[5],
+            category_id=row[6],
+        )
+
+    def get_task_by_id(self, *, id: int) -> Optional[models.Task]:
+        row = self._conn.execute(sqlalchemy.text(GET_TASK_BY_ID), {"p1": id}).first()
         if row is None:
             return None
         return models.Task(
@@ -56,6 +122,27 @@ class Querier:
                 category_id=row[6],
             )
 
+    def update_task(self, arg: UpdateTaskParams) -> Optional[models.Task]:
+        row = self._conn.execute(sqlalchemy.text(UPDATE_TASK), {
+            "p1": arg.description,
+            "p2": arg.expected_finished_at,
+            "p3": arg.state,
+            "p4": arg.person_id,
+            "p5": arg.category_id,
+            "p6": arg.id,
+        }).first()
+        if row is None:
+            return None
+        return models.Task(
+            id=row[0],
+            description=row[1],
+            created_at=row[2],
+            expected_finished_at=row[3],
+            state=row[4],
+            person_id=row[5],
+            category_id=row[6],
+        )
+
 
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
@@ -63,6 +150,34 @@ class AsyncQuerier:
 
     async def create_task(self, *, description: str, person_id: Optional[int], category_id: Optional[int]) -> Optional[models.Task]:
         row = (await self._conn.execute(sqlalchemy.text(CREATE_TASK), {"p1": description, "p2": person_id, "p3": category_id})).first()
+        if row is None:
+            return None
+        return models.Task(
+            id=row[0],
+            description=row[1],
+            created_at=row[2],
+            expected_finished_at=row[3],
+            state=row[4],
+            person_id=row[5],
+            category_id=row[6],
+        )
+
+    async def delete_task(self, *, id: int) -> Optional[models.Task]:
+        row = (await self._conn.execute(sqlalchemy.text(DELETE_TASK), {"p1": id})).first()
+        if row is None:
+            return None
+        return models.Task(
+            id=row[0],
+            description=row[1],
+            created_at=row[2],
+            expected_finished_at=row[3],
+            state=row[4],
+            person_id=row[5],
+            category_id=row[6],
+        )
+
+    async def get_task_by_id(self, *, id: int) -> Optional[models.Task]:
+        row = (await self._conn.execute(sqlalchemy.text(GET_TASK_BY_ID), {"p1": id})).first()
         if row is None:
             return None
         return models.Task(
@@ -87,3 +202,24 @@ class AsyncQuerier:
                 person_id=row[5],
                 category_id=row[6],
             )
+
+    async def update_task(self, arg: UpdateTaskParams) -> Optional[models.Task]:
+        row = (await self._conn.execute(sqlalchemy.text(UPDATE_TASK), {
+            "p1": arg.description,
+            "p2": arg.expected_finished_at,
+            "p3": arg.state,
+            "p4": arg.person_id,
+            "p5": arg.category_id,
+            "p6": arg.id,
+        })).first()
+        if row is None:
+            return None
+        return models.Task(
+            id=row[0],
+            description=row[1],
+            created_at=row[2],
+            expected_finished_at=row[3],
+            state=row[4],
+            person_id=row[5],
+            category_id=row[6],
+        )

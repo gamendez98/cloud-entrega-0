@@ -7,13 +7,15 @@ RETURNING *;
 SELECT *
 FROM categories;
 
--- name: UpdateCategory :exec
+-- name: UpdateCategory :one
 UPDATE categories
 SET name        = $2,
     description = $3
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;
 
--- name: DeleteCategory :exec
+-- name: DeleteCategory :one
 DELETE
 FROM categories
-WHERE id = $1;
+WHERE id = $1
+RETURNING *;

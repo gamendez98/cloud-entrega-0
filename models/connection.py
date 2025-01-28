@@ -14,5 +14,6 @@ def get_connection() -> None:
     connection = engine.connect()
     try:
         yield connection
+        connection.commit()
     finally:
         connection.close()

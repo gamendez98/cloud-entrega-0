@@ -13,9 +13,6 @@ from models.users import Querier
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
-# Function to create an access token
-
-
 class UserCreationParameters(BaseModel):
     username: str
     email: str
@@ -30,7 +27,6 @@ async def create_user(parameters: UserCreationParameters, connection=Depends(get
         email=parameters.email,
         password_hash=hash_password(parameters.password),
     )
-    connection.commit()
     return {"username": parameters.username, "email": parameters.email}
 
 
@@ -57,7 +53,6 @@ async def upload_image(file: UploadFile = File(...), connection=Depends(get_conn
         username=username,
         image_path=file_path,
     )
-    connection.commit()
 
     # Return the filename and path where the image is saved
     return ImageResponse(filename=file.filename, file_path=file_path)

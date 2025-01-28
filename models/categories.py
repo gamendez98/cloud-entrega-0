@@ -17,10 +17,11 @@ RETURNING id, name, description
 """
 
 
-DELETE_CATEGORY = """-- name: delete_category \\:exec
+DELETE_CATEGORY = """-- name: delete_category \\:one
 DELETE
 FROM categories
 WHERE id = :p1
+RETURNING id, name, description
 """
 
 
@@ -30,11 +31,12 @@ FROM categories
 """
 
 
-UPDATE_CATEGORY = """-- name: update_category \\:exec
+UPDATE_CATEGORY = """-- name: update_category \\:one
 UPDATE categories
 SET name        = :p2,
     description = :p3
 WHERE id = :p1
+RETURNING id, name, description
 """
 
 
@@ -52,8 +54,15 @@ class Querier:
             description=row[2],
         )
 
-    def delete_category(self, *, id: int) -> None:
-        self._conn.execute(sqlalchemy.text(DELETE_CATEGORY), {"p1": id})
+    def delete_category(self, *, id: int) -> Optional[models.Category]:
+        row = self._conn.execute(sqlalchemy.text(DELETE_CATEGORY), {"p1": id}).first()
+        if row is None:
+            return None
+        return models.Category(
+            id=row[0],
+            name=row[1],
+            description=row[2],
+        )
 
     def get_all_categories(self) -> Iterator[models.Category]:
         result = self._conn.execute(sqlalchemy.text(GET_ALL_CATEGORIES))
@@ -64,8 +73,15 @@ class Querier:
                 description=row[2],
             )
 
-    def update_category(self, *, id: int, name: str, description: str) -> None:
-        self._conn.execute(sqlalchemy.text(UPDATE_CATEGORY), {"p1": id, "p2": name, "p3": description})
+    def update_category(self, *, id: int, name: str, description: str) -> Optional[models.Category]:
+        row = self._conn.execute(sqlalchemy.text(UPDATE_CATEGORY), {"p1": id, "p2": name, "p3": description}).first()
+        if row is None:
+            return None
+        return models.Category(
+            id=row[0],
+            name=row[1],
+            description=row[2],
+        )
 
 
 class AsyncQuerier:
@@ -82,8 +98,15 @@ class AsyncQuerier:
             description=row[2],
         )
 
-    async def delete_category(self, *, id: int) -> None:
-        await self._conn.execute(sqlalchemy.text(DELETE_CATEGORY), {"p1": id})
+    async def delete_category(self, *, id: int) -> Optional[models.Category]:
+        row = (await self._conn.execute(sqlalchemy.text(DELETE_CATEGORY), {"p1": id})).first()
+        if row is None:
+            return None
+        return models.Category(
+            id=row[0],
+            name=row[1],
+            description=row[2],
+        )
 
     async def get_all_categories(self) -> AsyncIterator[models.Category]:
         result = await self._conn.stream(sqlalchemy.text(GET_ALL_CATEGORIES))
@@ -94,5 +117,12 @@ class AsyncQuerier:
                 description=row[2],
             )
 
-    async def update_category(self, *, id: int, name: str, description: str) -> None:
-        await self._conn.execute(sqlalchemy.text(UPDATE_CATEGORY), {"p1": id, "p2": name, "p3": description})
+    async def update_category(self, *, id: int, name: str, description: str) -> Optional[models.Category]:
+        row = (await self._conn.execute(sqlalchemy.text(UPDATE_CATEGORY), {"p1": id, "p2": name, "p3": description})).first()
+        if row is None:
+            return None
+        return models.Category(
+            id=row[0],
+            name=row[1],
+            description=row[2],
+        )
