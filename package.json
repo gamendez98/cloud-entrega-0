@@ -1,0 +1,22 @@
+{
+  "name": "cloud-entrega-0",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gamendez98/cloud-entrega-0.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gamendez98/cloud-entrega-0/issues"
+  },
+  "homepage": "https://github.com/gamendez98/cloud-entrega-0#readme",
+  "description": "",
+  "devDependencies": {
+    "tailwindcss": "^4.0.0"
+  }
+}
