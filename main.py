@@ -1,7 +1,4 @@
-from typing import Union
-
 from fastapi import FastAPI
-
 from endpoints.categories import category_router
 from endpoints.tasks import tasks_router
 from endpoints.users import user_router

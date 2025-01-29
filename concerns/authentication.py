@@ -2,6 +2,7 @@ from datetime import timedelta, datetime, timezone
 
 from jose import jwt, JWTError
 import bcrypt
+from starlette.responses import RedirectResponse
 
 from config import SECRET_KEY, ALGORITHM
 from fastapi import Depends, HTTPException, status
@@ -34,27 +35,19 @@ def verify_access_token(token: str):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
+def get_current_user(token: str = Depends(oauth2_scheme)) -> str | RedirectResponse:
     check_blacklist(token)
     payload = verify_access_token(token)
     if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return RedirectResponse(url="/users/login", status_code=303)
     username = payload.get("sub")
     return username
 
-def get_current_token(token: str = Depends(oauth2_scheme)):
+def get_current_token(token: str = Depends(oauth2_scheme)) -> str | RedirectResponse:
     check_blacklist(token)
     payload = verify_access_token(token)
     if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return RedirectResponse(url="/users/login", status_code=303)
     return token
 
 
