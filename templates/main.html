@@ -9,6 +9,12 @@
     <script src="https://unpkg.com/htmx.org@2.0.4"
             integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
             crossorigin="anonymous"></script>
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            const token = localStorage.getItem('access_token');
+            event.detail.headers['Authorization'] = `Bearer ${token}`;
+        });
+    </script>
 
 </head>
 <body class="bg-gray-900 text-white flex justify-center items-center h-screen">

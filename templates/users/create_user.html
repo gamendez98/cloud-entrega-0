@@ -1,0 +1,26 @@
+        <form class="space-y-3" id="categories-list" x-data="{password: '', password2: '', get same_password () { return this.password === this.password2; }}"
+            hx-post="{{ url_for('users:login') }}"
+        >
+            <label class="flex flex-col gap-2">
+                <span class="text-white">Username</span>
+                <input type="text" name="username"
+                       class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <label class="flex flex-col gap-2">
+                <span class="text-white">Email</span>
+                <input type="text" name="email"
+                       class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <label class="flex flex-col gap-2">
+                <span class="text-white">Password</span>
+                <input x-model="password" type="password" name="password" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <label class="flex flex-col gap-2">
+                <span class="text-white">Password</span>
+                <input x-model="password2" type="password" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <button class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg cursor-not-allowed"
+                    :disabled="!same_password" :class="{ 'opacity-50 cursor-not-allowed': !same_password }"
+            >Login
+            </button>
+        </form>

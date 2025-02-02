@@ -1,0 +1,29 @@
+<div x-data="{show_form: false}" class="flex flex-col gap-2">
+    <button class="rounded bg-blue-500 hover:bg-blue-700" @click="show_form=!show_form">Edit</button>
+    <form x-cloak x-show="show_form" class="flex flex-col gap-4"
+          @click.outside="show_form=false"
+          hx-put="http://127.0.0.1:8000/tasks/1"
+          hx-target="#task-item-1"
+          hx-swap="outerHTML"
+    >
+        <label class="flex flex-col gap-2">
+            <span class="text-white">Description</span>
+            <input type="text" name="description" value="Description for task 1"
+                   class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+        </label>
+        <label class="flex flex-col gap-2">
+            <span class="text-white">Expected Finish</span>
+            <input type="text" name="expected_finished_at" value="2025-02-10"
+                   class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+        </label>
+        <label class="flex flex-col gap-2">
+            <span class="text-white">State</span>
+            <select name="state" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+                {% for state in states %}
+                    <option value="In Progress">In Progress</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button class="bg-green-700 hover:bg-green-800 text-white rounded-lg py-2 px-4">Confirm</button>
+    </form>
+</div>

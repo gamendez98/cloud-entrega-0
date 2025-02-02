@@ -1,12 +1,14 @@
 from datetime import timedelta, datetime, timezone
 
 import bcrypt
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
 from config import SECRET_KEY, ALGORITHM, LOGIN_URL
+from models.connection import get_connection
+from models.users import Querier
 
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
@@ -29,12 +31,12 @@ def verify_access_token(token: str):
         return None
 
 
+def get_token(request: Request):
+    token = request.cookies.get("access_token")
+    return token
 
-# OAuth2PasswordBearer will look for the token in the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=LOGIN_URL, auto_error=False)
 
-
-def get_current_user(token: str = Depends(oauth2_scheme)) -> str | RedirectResponse:
+def get_current_username(token: str = Depends(get_token)) -> str | RedirectResponse:
     if not token:
         raise HTTPException(status_code=307, headers={"Location": LOGIN_URL})
     check_blacklist(token)
@@ -45,7 +47,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> str | RedirectRespo
     return username
 
 
-def get_current_token(token: str = Depends(oauth2_scheme)) -> str | RedirectResponse:
+def get_current_user(username: str = Depends(get_current_username), connection=Depends(get_connection)):
+    querier = Querier(connection)
+    return querier.get_user_by_username(username=username)
+
+
+def get_current_token(token: str = Depends(get_token)) -> str | RedirectResponse:
     check_blacklist(token)
     payload = verify_access_token(token)
     if payload is None:

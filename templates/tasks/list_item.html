@@ -1,0 +1,17 @@
+<li class="flex flex-col gap-2 bg-gray-700 p-3 rounded-lg" id="task-item-1">
+    <div class="flex justify-between">
+        <div class="flex flex-col gap-2">
+            <span class="font-semibold">{{ task.description }}</span>
+            <p class="text-gray-400 text-xs">Created At: {{ task.created_at }}</p>
+            <p class="text-gray-400 text-xs">Expected Finish: {{ task.expected_finished_at }}</p>
+            <p class="text-gray-400 text-xs">State: {{ task.state }}</p>
+        </div>
+        <button class="bg-red-500 text-white hover:bg-red-700 p-1 rounded"
+                hx-delete="{{ url_for('tasks:delete', task_id=task.id) }}"
+                hx-target="#task-item-1"
+                hx-swap="delete"
+        >Delete
+        </button>
+    </div>
+    {% include 'tasks/update_form.html' %}
+</li>

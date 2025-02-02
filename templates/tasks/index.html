@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block content %}
+    <div class="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">{{ title }}</h2>
+        <ul class="space-y-3" id="tasks-list">
+            {% for task in tasks %}
+                {% include 'tasks/list_item.html' %}
+            {% endfor %}
+        </ul>
+        <button x-data="{}"
+                class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg"
+                @click.prevent="$dispatch('open-create-modal')"
+        >Add Task
+        </button>
+    </div>
+
+    {% include 'tasks/create_modal.html' %}
+{% endblock %}
