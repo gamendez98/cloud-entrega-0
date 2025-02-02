@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Form
 from fastapi import Request
 from pydantic import BaseModel
 
@@ -14,14 +16,19 @@ class CreateCategoryParameters(BaseModel):
     description: str
 
 
-@category_router.post("/")
-async def create_category(parameters: CreateCategoryParameters, connection=Depends(get_connection)):
+@category_router.post("/", name="categories:create")
+async def create_category(
+        request: Request,
+        parameters: Annotated[CreateCategoryParameters, Form()],
+        connection=Depends(get_connection)):
     querier = Querier(connection)
     category = querier.create_category(
         name=parameters.name,
         description=parameters.description,
     )
-    return category
+    return templates.TemplateResponse('categories/list_item.html', {
+        'request':request, 'category': category
+    })
 
 
 @category_router.delete("/{category_id}")
@@ -33,7 +40,7 @@ async def delete_category(category_id: int, connection=Depends(get_connection)):
     return {"error": f"Category with ID {category_id} not found."}
 
 
-@category_router.get("/")
+@category_router.get("/", name="categories:index")
 async def get_all_categories(request: Request, connection=Depends(get_connection)):
     querier = Querier(connection)
     categories = querier.get_all_categories()

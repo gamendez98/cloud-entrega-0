@@ -1,0 +1,35 @@
+<div x-data="{open: false, name:'', description:''}" x-show="open"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 w-screen h-screen backdrop-blur-sm"
+     x-cloak
+     @open-create-modal.window="open = true"
+>
+    <div class="flex flex-col bg-white rounded-2xl shadow-lg max-h-[80vh] w-96 p-4 gap-4"
+         @click.away="open = false;">
+        <div class="flex justify-between w-full">
+            <h2 class="text-neutral-700 font-bold text-xl">New category</h2>
+            <button class="bg-neutral-100 hover:bg-neutral-200 rounded-full h-6 w-6"
+                    @click="open = false"
+            >
+                x
+            </button>
+        </div>
+
+        <form
+                class="flex flex-col gap-4"
+                hx-post="{{ url_for('categories:create') }}"
+                hx-target="#categories-list"
+                hx-swap="beforeend"
+                @htmx:after-request.camelCase="open = false; name = ''; description = ''"
+        >
+            <label class="flex flex-col gap-2">
+                <span class="text-neutral-700">Name</span>
+                <input x-model="name" type="text" name="name" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <label class="flex flex-col gap-2">
+                <span class="text-neutral-700">Description</span>
+                <input x-model="description" type="text" name="description" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <button class="bg-neutral-700 hover:bg-neutral-800 text-white rounded-lg py-2 px-4">Create</button>
+        </form>
+    </div>
+</div>
