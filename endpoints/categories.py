@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi import Request
 from pydantic import BaseModel
 
@@ -27,17 +27,17 @@ async def create_category(
         description=parameters.description,
     )
     return templates.TemplateResponse('categories/list_item.html', {
-        'request':request, 'category': category
+        'request': request, 'category': category
     })
 
 
-@category_router.delete("/{category_id}")
+@category_router.delete("/{category_id}", name="categories:delete")
 async def delete_category(category_id: int, connection=Depends(get_connection)):
     querier = Querier(connection)
     result = querier.delete_category(id=category_id)
     if result:
         return {"message": f"Category with ID {category_id} has been deleted successfully."}
-    return {"error": f"Category with ID {category_id} not found."}
+    return HTTPException(status_code=404, detail=f"Category with ID {category_id} not found.")
 
 
 @category_router.get("/", name="categories:index")
@@ -49,9 +49,12 @@ async def get_all_categories(request: Request, connection=Depends(get_connection
     )
 
 
-@category_router.put("/{category_id}")
-async def update_category(category_id: int, parameters: CreateCategoryParameters,
-                          connection=Depends(get_connection)):
+@category_router.put("/{category_id}", name="categories:update")
+async def update_category(
+        request: Request,
+        category_id: int,
+        parameters: Annotated[CreateCategoryParameters, Form()],
+        connection=Depends(get_connection)):
     querier = Querier(connection)
     updated_category = querier.update_category(
         id=category_id,
@@ -59,5 +62,7 @@ async def update_category(category_id: int, parameters: CreateCategoryParameters
         description=parameters.description,
     )
     if updated_category:
-        return updated_category
-    return {"error": f"Category with ID {category_id} not found."}
+        return templates.TemplateResponse('categories/list_item.html', {
+            'request': request, 'category': updated_category
+        })
+    return HTTPException(status_code=404, detail=f"Category with ID {category_id} not found.")

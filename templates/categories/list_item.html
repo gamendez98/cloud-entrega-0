@@ -1,4 +1,36 @@
-<li class="bg-gray-700 p-3 rounded-lg">
-    <span class="font-semibold">{{ category.name }}</span>
-    <p class="text-gray-400 text-sm">{{ category.description }}</p>
+<li class="flex flex-col gap-2 bg-gray-700 p-3 rounded-lg" id="category-item-{{ category.id }}">
+    <div class="flex justify-between">
+        <div class="flex flex-col gap-2">
+            <span class="font-semibold">{{ category.name }}</span>
+            <p class="text-gray-400 text-sm">{{ category.description }}</p>
+        </div>
+        <button class="bg-red-500 text-white hover:bg-red-700 p-1 rounded"
+                hx-delete="{{ url_for('categories:delete', category_id=category.id) }}"
+                hx-target="#category-item-{{ category.id }}"
+                hx-vals="id={{ category.id }}"
+                hx-swap="delete"
+        >Delete
+        </button>
+    </div>
+    <div x-data="{show_form: false}" class="flex flex-col gap-2">
+        <button class="rounded bg-blue-500 hover:bg-blue-700" @click="show_form=!show_form">Edit</button>
+        <form x-cloak x-show="show_form" class="flex flex-col gap-4"
+            @click.outside="show_form=false"
+              hx-put="{{ url_for('categories:update', category_id=category.id) }}"
+              hx-target="#category-item-{{ category.id }}"
+              hx-swap="outerHTML"
+        >
+            <label class="flex flex-col gap-2">
+                <span class="text-white">Name</span>
+                <input type="text" name="name" value="{{ category.name }}"
+                       class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <label class="flex flex-col gap-2">
+                <span class="text-white">Description</span>
+                <input type="text" name="description" value="{{ category.description }}"
+                       class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+            </label>
+            <button class="bg-green-700 hover:bg-green-800 text-white rounded-lg py-2 px-4">Confirm</button>
+        </form>
+    </div>
 </li>
