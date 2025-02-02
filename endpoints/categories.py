@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
+from fastapi import Request
 from pydantic import BaseModel
 
+from config import templates
 from models.categories import Querier
 from models.connection import get_connection
 
@@ -32,10 +34,12 @@ async def delete_category(category_id: int, connection=Depends(get_connection)):
 
 
 @category_router.get("/")
-async def get_all_categories(connection=Depends(get_connection)):
+async def get_all_categories(request: Request, connection=Depends(get_connection)):
     querier = Querier(connection)
     categories = querier.get_all_categories()
-    return categories
+    return templates.TemplateResponse(
+        "categories/index.html", {"request": request, "categories": categories}
+    )
 
 
 @category_router.put("/{category_id}")

@@ -68,7 +68,7 @@ class Credentials(BaseModel):
 async def login(username: str = Form(...), password: str = Form(...), connection=Depends(get_connection)):
     querier = Querier(connection)
     password_hash = querier.get_password_hash(username=username)
-    if not check_password(password_hash, password):
+    if not password_hash or not check_password(password_hash, password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",

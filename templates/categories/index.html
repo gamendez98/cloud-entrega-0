@@ -1,0 +1,12 @@
+{% extends 'main.html' %}
+{% block content %}
+    <div class="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">Categories</h2>
+        <ul class="space-y-3">
+            {% for category in categories %}
+                {% include 'categories/list_item.html' %}
+            {% endfor %}
+        </ul>
+        <button class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">Add Category</button>
+    </div>
+{% endblock %}
