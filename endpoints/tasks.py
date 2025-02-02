@@ -1,9 +1,11 @@
 from fastapi import APIRouter
 
+from concerns.authentication import get_current_user
 from models.connection import get_connection
 from models.tasks import Querier
+from fastapi import Request
 
-tasks_router = APIRouter(prefix="/users", tags=["Tasks"])
+tasks_router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
 from fastapi import Depends
 from pydantic import BaseModel
@@ -35,8 +37,12 @@ async def delete_task(task_id: int, connection=Depends(get_connection)):
     return {"error": f"Task with ID {task_id} not found."}
 
 
-@tasks_router.get("user/{username}")
-async def get_user_tasks(username: str, connection=Depends(get_connection)):
+@tasks_router.get("/", name="tasks:index")
+async def get_user_tasks(
+        request: Request,
+        username=Depends(get_current_user),
+        connection=Depends(get_connection)
+):
     querier = Querier(connection)
     tasks = querier.get_tasks_by_username(username=username)
     return tasks

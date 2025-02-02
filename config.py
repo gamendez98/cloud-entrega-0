@@ -12,6 +12,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 PROFILE_PICS_DIR = "static/profile_pics"
 ENVIRONMENT = os.getenv("ENVIRONMENT")
 DEVELOPMENT = True
+LOGIN_URL = "/users/login"
 
 templates = Jinja2Templates(directory="templates")
 

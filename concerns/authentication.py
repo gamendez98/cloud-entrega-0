@@ -1,14 +1,12 @@
 from datetime import timedelta, datetime, timezone
 
-from jose import jwt, JWTError
 import bcrypt
-from starlette.responses import RedirectResponse
-
-from config import SECRET_KEY, ALGORITHM
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
 
-from models.models import Person
+from config import SECRET_KEY, ALGORITHM, LOGIN_URL
 
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
@@ -31,17 +29,21 @@ def verify_access_token(token: str):
         return None
 
 
+
 # OAuth2PasswordBearer will look for the token in the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=LOGIN_URL, auto_error=False)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str | RedirectResponse:
+    if not token:
+        raise HTTPException(status_code=307, headers={"Location": LOGIN_URL})
     check_blacklist(token)
     payload = verify_access_token(token)
     if payload is None:
-        return RedirectResponse(url="/users/login", status_code=303)
+        raise HTTPException(status_code=307, headers={"Location": LOGIN_URL})
     username = payload.get("sub")
     return username
+
 
 def get_current_token(token: str = Depends(oauth2_scheme)) -> str | RedirectResponse:
     check_blacklist(token)
