@@ -1,10 +1,10 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-from config import DEVELOPMENT
 from endpoints.categories import category_router
 from endpoints.tasks import tasks_router
 from endpoints.users import user_router
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -26,7 +26,7 @@ def health_check():
     return {"status": "ok"}
 
 
-if DEVELOPMENT:
-    from fastapi.staticfiles import StaticFiles
-    print("Starting server...")
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+print("Starting server...")
+app.mount("/static", StaticFiles(directory="static"), name="static")

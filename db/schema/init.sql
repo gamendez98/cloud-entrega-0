@@ -1,3 +1,19 @@
+CREATE TABLE persons
+(
+    id            SERIAL PRIMARY KEY,
+    username      TEXT NOT NULL UNIQUE,
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    image_path    TEXT
+);
+
+CREATE TABLE categories
+(
+    id          SERIAL PRIMARY KEY,
+    name        TEXT NOT NULL,
+    description TEXT NOT NULL
+);
+
 
 CREATE TYPE state AS ENUM ('backlog', 'started', 'finished');
 
