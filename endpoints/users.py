@@ -42,7 +42,7 @@ def get_user_profile(request: Request, user=Depends(get_current_user)):
     :rtype: HTMLResponse
     """
     if not user.image_path:
-        user.image_path = "/static/resources/default.jpg"
+        user.image_path = "static/resources/default.jpg"
     return templates.TemplateResponse(
         "users/profile.html", {"request": request, "user": user, "get_profile_image_path": get_profile_image_path}
     )
