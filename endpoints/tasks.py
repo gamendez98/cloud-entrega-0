@@ -61,7 +61,7 @@ async def create_task(
     })
 
 
-@tasks_router.delete("/{task_id}", name="tasks:delete", response_class=HTMLResponse)
+@tasks_router.delete("/{task_id}", name="tasks:delete")
 async def delete_task(
         task_id: int,
         connection=Depends(get_connection),

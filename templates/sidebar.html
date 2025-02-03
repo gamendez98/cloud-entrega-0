@@ -17,6 +17,14 @@
             Tasks
         </a>
         </li>
+        <li><a hx-get="{{ url_for('users:profile') }}"
+               hx-target="#main-page-container"
+               hx-select="#main-page-container"
+               hx-push-url="true"
+               class="text-gray-400 hover:text-white cursor-pointer">
+            Profile
+        </a>
+        </li>
         <li>
             <form class="contents" action="{{ url_for('users:logout') }}" method="POST">
                 <button

@@ -1,6 +1,8 @@
 ## Instructions to run
 
 ```bash
+git clone https://github.com/gamendez98/cloud-entrega-0
+cd cloud-entrega-0
 docker-compose up --build
 ```
 
