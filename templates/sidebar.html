@@ -1,0 +1,21 @@
+<aside class="w-64 bg-gray-800 p-4">
+    <h2 class="text-xl font-semibold mb-4">Sidebar</h2>
+    <ul class="space-y-2">
+        <li><a hx-get="{{ url_for('categories:index') }}"
+               hx-target="#main-page-container"
+               hx-select="#main-page-container"
+               hx-push-url="true"
+               class="text-gray-400 hover:text-white cursor-pointer">
+            Categories
+        </a>
+        </li>
+        <li><a hx-get="{{ url_for('tasks:index') }}"
+               hx-target="#main-page-container"
+               hx-select="#main-page-container"
+               hx-push-url="true"
+               class="text-gray-400 hover:text-white cursor-pointer">
+            Tasks
+        </a>
+        </li>
+    </ul>
+</aside>

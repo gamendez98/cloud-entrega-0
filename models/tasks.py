@@ -13,9 +13,8 @@ from models import models
 
 
 CREATE_TASK = """-- name: create_task \\:one
-INSERT INTO tasks (description, person_id, category_id)
-VALUES (:p1, :p2, :p3)
-RETURNING id, description, created_at, expected_finished_at, state, person_id, category_id
+         INSERT INTO tasks (description, person_id, category_id)
+VALUES (:p1, :p2, :p3) RETURNING id, description, created_at, expected_finished_at, state, person_id, category_id
 """
 
 
@@ -31,6 +30,14 @@ GET_TASK_BY_ID = """-- name: get_task_by_id \\:one
 SELECT id, description, created_at, expected_finished_at, state, person_id, category_id
 FROM tasks
 WHERE id = :p1
+"""
+
+
+GET_TASK_USERNAME_AND_BY_CATEGORY_ID = """-- name: get_task_username_and_by_category_id \\:many
+SELECT tasks.id, tasks.description, tasks.created_at, tasks.expected_finished_at, tasks.state, tasks.person_id, tasks.category_id
+FROM tasks
+    JOIN persons ON tasks.person_id = persons.id AND persons.username = :p1
+WHERE tasks.category_id = :p2
 """
 
 
@@ -106,6 +113,19 @@ class Querier:
             person_id=row[5],
             category_id=row[6],
         )
+
+    def get_task_username_and_by_category_id(self, *, username: str, category_id: Optional[int]) -> Iterator[models.Task]:
+        result = self._conn.execute(sqlalchemy.text(GET_TASK_USERNAME_AND_BY_CATEGORY_ID), {"p1": username, "p2": category_id})
+        for row in result:
+            yield models.Task(
+                id=row[0],
+                description=row[1],
+                created_at=row[2],
+                expected_finished_at=row[3],
+                state=row[4],
+                person_id=row[5],
+                category_id=row[6],
+            )
 
     def get_tasks_by_username(self, *, username: str) -> Iterator[models.Task]:
         result = self._conn.execute(sqlalchemy.text(GET_TASKS_BY_USERNAME), {"p1": username})
@@ -186,6 +206,19 @@ class AsyncQuerier:
             person_id=row[5],
             category_id=row[6],
         )
+
+    async def get_task_username_and_by_category_id(self, *, username: str, category_id: Optional[int]) -> AsyncIterator[models.Task]:
+        result = await self._conn.stream(sqlalchemy.text(GET_TASK_USERNAME_AND_BY_CATEGORY_ID), {"p1": username, "p2": category_id})
+        async for row in result:
+            yield models.Task(
+                id=row[0],
+                description=row[1],
+                created_at=row[2],
+                expected_finished_at=row[3],
+                state=row[4],
+                person_id=row[5],
+                category_id=row[6],
+            )
 
     async def get_tasks_by_username(self, *, username: str) -> AsyncIterator[models.Task]:
         result = await self._conn.stream(sqlalchemy.text(GET_TASKS_BY_USERNAME), {"p1": username})

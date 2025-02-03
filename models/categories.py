@@ -31,6 +31,13 @@ FROM categories
 """
 
 
+GET_CATEGORY_BY_ID = """-- name: get_category_by_id \\:one
+SELECT id, name, description
+FROM categories
+WHERE categories.id = :p1
+"""
+
+
 UPDATE_CATEGORY = """-- name: update_category \\:one
 UPDATE categories
 SET name        = :p2,
@@ -72,6 +79,16 @@ class Querier:
                 name=row[1],
                 description=row[2],
             )
+
+    def get_category_by_id(self, *, id: int) -> Optional[models.Category]:
+        row = self._conn.execute(sqlalchemy.text(GET_CATEGORY_BY_ID), {"p1": id}).first()
+        if row is None:
+            return None
+        return models.Category(
+            id=row[0],
+            name=row[1],
+            description=row[2],
+        )
 
     def update_category(self, *, id: int, name: str, description: str) -> Optional[models.Category]:
         row = self._conn.execute(sqlalchemy.text(UPDATE_CATEGORY), {"p1": id, "p2": name, "p3": description}).first()
@@ -116,6 +133,16 @@ class AsyncQuerier:
                 name=row[1],
                 description=row[2],
             )
+
+    async def get_category_by_id(self, *, id: int) -> Optional[models.Category]:
+        row = (await self._conn.execute(sqlalchemy.text(GET_CATEGORY_BY_ID), {"p1": id})).first()
+        if row is None:
+            return None
+        return models.Category(
+            id=row[0],
+            name=row[1],
+            description=row[2],
+        )
 
     async def update_category(self, *, id: int, name: str, description: str) -> Optional[models.Category]:
         row = (await self._conn.execute(sqlalchemy.text(UPDATE_CATEGORY), {"p1": id, "p2": name, "p3": description})).first()

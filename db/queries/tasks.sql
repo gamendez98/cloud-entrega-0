@@ -10,10 +10,16 @@ FROM tasks
 WHERE id = $1;
 
 
+-- name: GetTaskUsernameAndByCategoryId :many
+SELECT tasks.*
+FROM tasks
+    JOIN persons ON tasks.person_id = persons.id AND persons.username = $1
+WHERE tasks.category_id = $2;
+
+
 -- name: CreateTask :one
-INSERT INTO tasks (description, person_id, category_id)
-VALUES ($1, $2, $3)
-RETURNING *;
+         INSERT INTO tasks (description, person_id, category_id)
+VALUES ($1, $2, $3) RETURNING *;
 
 
 -- name: UpdateTask :one

@@ -117,3 +117,27 @@ async def update_task(
     return templates.TemplateResponse('tasks/list_item.html', {
         'request': request, 'task': task, "categories": categories, 'states': State
     })
+
+@tasks_router.get("/category/{category_id}", name="tasks:category")
+def get_tasks_by_category(
+        request: Request,
+        category_id: int,
+        connection=Depends(get_connection),
+        categories=Depends(get_categories),
+        user=Depends(get_current_user)
+):
+    querier = Querier(connection)
+    tasks = querier.get_task_username_and_by_category_id(
+        username=user.username,
+        category_id=category_id
+    )
+    category_querier = CategoryQuerier(connection)
+    category = category_querier.get_category_by_id(id=category_id)
+    return templates.TemplateResponse(
+        "tasks/index.html", {
+            "request": request, "title": f"Tasks in category {category.name}",
+            "tasks": tasks, "categories": categories,
+            "user": user, 'states': State
+        }
+    )
+
