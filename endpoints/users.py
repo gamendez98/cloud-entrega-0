@@ -1,4 +1,5 @@
 import shutil
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File
 from pydantic import BaseModel
@@ -22,17 +23,23 @@ class UserCreationParameters(BaseModel):
     password: str
 
 
+@user_router.get("/signin", name="users:signin")
+async def signin_page(request: Request):
+    return templates.TemplateResponse(
+        'users/signin.html', {'request': request}
+    )
 
-
-@user_router.post("/")
-async def create_user(parameters: UserCreationParameters, connection=Depends(get_connection)):
+@user_router.post("/signin", name="users:signin")
+async def create_user(
+        parameters: Annotated[UserCreationParameters, Form()],
+        connection=Depends(get_connection)):
     querier = Querier(connection)
     querier.create_user(
         username=parameters.username,
         email=parameters.email,
         password_hash=hash_password(parameters.password),
     )
-    return {"username": parameters.username, "email": parameters.email}
+    return RedirectResponse(url=LOGIN_URL, status_code=303)
 
 
 class ImageResponse:

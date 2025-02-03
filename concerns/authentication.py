@@ -3,7 +3,6 @@ from datetime import timedelta, datetime, timezone
 import bcrypt
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
-from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
 from config import SECRET_KEY, ALGORITHM, LOGIN_URL
@@ -65,10 +64,11 @@ def check_password(password_hash: str, entered_password: str):
 
 
 def hash_password(password: str):
-    return bcrypt.hashpw(
-        password.encode('utf-8'),
-        bcrypt.gensalt()
-    )
+    password = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    password_hash = bcrypt.hashpw(password, salt)
+    return password_hash.decode(
+        'utf-8')
 
 
 blacklisted_tokens = set()

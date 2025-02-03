@@ -1,5 +1,12 @@
-        <form class="space-y-3" id="categories-list" x-data="{password: '', password2: '', get same_password () { return this.password === this.password2; }}"
-            hx-post="{{ url_for('users:login') }}"
+{% extends 'users/main.html' %}
+{% block content %}
+
+    <div class="w-full max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">Login</h2>
+        <form class="space-y-3" id="categories-list"
+              x-data="{password: '', password2: '', get same_password () { return this.password === this.password2; }}"
+              action="{{ url_for('users:signin') }}"
+              method="POST"
         >
             <label class="flex flex-col gap-2">
                 <span class="text-white">Username</span>
@@ -13,14 +20,19 @@
             </label>
             <label class="flex flex-col gap-2">
                 <span class="text-white">Password</span>
-                <input x-model="password" type="password" name="password" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+                <input x-model="password" type="password" name="password"
+                       class="border border-neutral-200 rounded-lg p-2 text-gray-700">
             </label>
             <label class="flex flex-col gap-2">
-                <span class="text-white">Password</span>
-                <input x-model="password2" type="password" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+                <span class="text-white">Password 2</span>
+                <input x-model="password2" type="password"
+                       class="border border-neutral-200 rounded-lg p-2 text-gray-700">
             </label>
             <button class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg cursor-not-allowed"
                     :disabled="!same_password" :class="{ 'opacity-50 cursor-not-allowed': !same_password }"
-            >Login
+            >Signin
             </button>
         </form>
+    </div>
+
+{% endblock %}
