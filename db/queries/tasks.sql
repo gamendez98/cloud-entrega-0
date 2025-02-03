@@ -21,9 +21,8 @@ UPDATE tasks
 SET description          = $1,
     expected_finished_at = $2,
     state                = $3,
-    person_id            = $4,
-    category_id          = $5
-WHERE id = $6
+    category_id          = $4
+WHERE id = $5
 RETURNING *;
 
 

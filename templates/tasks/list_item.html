@@ -1,4 +1,4 @@
-<li class="flex flex-col gap-2 bg-gray-700 p-3 rounded-lg" id="task-item-1">
+<li class="flex flex-col gap-2 bg-gray-700 p-3 rounded-lg" id="task-item-{{ task.id }}">
     <div class="flex justify-between">
         <div class="flex flex-col gap-2">
             <span class="font-semibold">{{ task.description }}</span>
@@ -8,7 +8,7 @@
         </div>
         <button class="bg-red-500 text-white hover:bg-red-700 p-1 rounded"
                 hx-delete="{{ url_for('tasks:delete', task_id=task.id) }}"
-                hx-target="#task-item-1"
+                hx-target="#task-item-{{ task.id }}"
                 hx-swap="delete"
         >Delete
         </button>

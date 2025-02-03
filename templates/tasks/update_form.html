@@ -2,25 +2,42 @@
     <button class="rounded bg-blue-500 hover:bg-blue-700" @click="show_form=!show_form">Edit</button>
     <form x-cloak x-show="show_form" class="flex flex-col gap-4"
           @click.outside="show_form=false"
-          hx-put="http://127.0.0.1:8000/tasks/1"
-          hx-target="#task-item-1"
+          hx-put="{{ url_for('tasks:update', task_id=task.id) }}"
+          hx-target="#task-item-{{ task.id }}"
           hx-swap="outerHTML"
     >
         <label class="flex flex-col gap-2">
             <span class="text-white">Description</span>
-            <input type="text" name="description" value="Description for task 1"
+            <input type="text" name="description" value="{{ task.description }}"
                    class="border border-neutral-200 rounded-lg p-2 text-gray-700">
         </label>
         <label class="flex flex-col gap-2">
             <span class="text-white">Expected Finish</span>
-            <input type="text" name="expected_finished_at" value="2025-02-10"
+            <input type="date" name="expected_finished_at" value="{{ task.expected_finished_at }}"
                    class="border border-neutral-200 rounded-lg p-2 text-gray-700">
         </label>
         <label class="flex flex-col gap-2">
             <span class="text-white">State</span>
             <select name="state" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
                 {% for state in states %}
-                    <option value="In Progress">In Progress</option>
+                    <option value="{{ state.value }}"
+                            {% if state.value==task.state %}
+                            selected
+                            {% endif %}
+                    >{{ state.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="flex flex-col gap-2">
+            <span class="text-white">Category</span>
+            <select name="category_id" class="border border-neutral-200 rounded-lg p-2 text-gray-700">
+                {% for category in categories %}
+                    <option value="{{ category.id }}"
+                            {% if category.id==task.category_id %}
+                            selected
+                            {% endif %}>
+                        {{ category.name }}
+                    </option>
                 {% endfor %}
             </select>
         </label>

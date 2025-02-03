@@ -46,9 +46,8 @@ UPDATE tasks
 SET description          = :p1,
     expected_finished_at = :p2,
     state                = :p3,
-    person_id            = :p4,
-    category_id          = :p5
-WHERE id = :p6
+    category_id          = :p4
+WHERE id = :p5
 RETURNING id, description, created_at, expected_finished_at, state, person_id, category_id
 """
 
@@ -58,7 +57,6 @@ class UpdateTaskParams:
     description: str
     expected_finished_at: Optional[datetime.datetime]
     state: models.State
-    person_id: Optional[int]
     category_id: Optional[int]
     id: int
 
@@ -127,9 +125,8 @@ class Querier:
             "p1": arg.description,
             "p2": arg.expected_finished_at,
             "p3": arg.state,
-            "p4": arg.person_id,
-            "p5": arg.category_id,
-            "p6": arg.id,
+            "p4": arg.category_id,
+            "p5": arg.id,
         }).first()
         if row is None:
             return None
@@ -208,9 +205,8 @@ class AsyncQuerier:
             "p1": arg.description,
             "p2": arg.expected_finished_at,
             "p3": arg.state,
-            "p4": arg.person_id,
-            "p5": arg.category_id,
-            "p6": arg.id,
+            "p4": arg.category_id,
+            "p5": arg.id,
         })).first()
         if row is None:
             return None
