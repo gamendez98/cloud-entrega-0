@@ -7,7 +7,7 @@ from concerns.authentication import create_access_token, check_password, hash_pa
     black_list_token, \
     get_current_token
 from concerns.user import get_profile_image_path
-from config import templates
+from config import templates, LOGIN_URL
 from models.connection import get_connection
 from models.users import Querier
 from fastapi import Request, Response
@@ -107,7 +107,7 @@ async def login(
     return response
 
 
-@user_router.post("/logout")
+@user_router.post("/logout", name="users:logout")
 async def logout(token=Depends(get_current_token)):
     black_list_token(token)
-    return {"message": "Logged out successfully"}
+    return RedirectResponse(url=LOGIN_URL, status_code=303)

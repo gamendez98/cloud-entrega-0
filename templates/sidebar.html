@@ -17,5 +17,13 @@
             Tasks
         </a>
         </li>
+        <li>
+            <form class="contents" action="{{ url_for('users:logout') }}" method="POST">
+                <button
+                        class="text-gray-400 hover:text-white cursor-pointer">
+                    Logout
+                </button>
+            </form>
+        </li>
     </ul>
 </aside>
