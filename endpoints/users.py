@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from concerns.authentication import create_access_token, check_password, hash_password, get_current_username, \
     black_list_token, \
-    get_current_token
+    get_current_token, get_current_user
 from concerns.user import get_profile_image_path
 from config import templates, LOGIN_URL
 from models.connection import get_connection
@@ -23,11 +23,21 @@ class UserCreationParameters(BaseModel):
     password: str
 
 
+@user_router.get("/", name="users:profile")
+def get_user_profile(request: Request, user=Depends(get_current_user)):
+    if not user.image_path:
+        user.image_path = "/static/resources/default.jpg"
+    return templates.TemplateResponse(
+        "users/profile.html", {"request": request, "user": user, "get_profile_image_path": get_profile_image_path}
+    )
+
+
 @user_router.get("/signin", name="users:signin")
 async def signin_page(request: Request):
     return templates.TemplateResponse(
         'users/signin.html', {'request': request}
     )
+
 
 @user_router.post("/signin", name="users:signin")
 async def create_user(
@@ -48,7 +58,7 @@ class ImageResponse:
         self.file_path = file_path
 
 
-@user_router.post("/upload-image")
+@user_router.post("/upload-image", name="users:upload_image")
 async def upload_image(file: UploadFile = File(...), connection=Depends(get_connection),
                        username: str = Depends(get_current_username)):
     # Generate a path for the uploaded file
@@ -67,7 +77,7 @@ async def upload_image(file: UploadFile = File(...), connection=Depends(get_conn
     )
 
     # Return the filename and path where the image is saved
-    return ImageResponse(filename=file.filename, file_path=file_path)
+    return RedirectResponse(url="/users", status_code=303)
 
 
 class Credentials(BaseModel):
@@ -81,6 +91,7 @@ async def login_page(request: Request):
     return templates.TemplateResponse(
         'users/login.html', {'request': request}
     )
+
 
 @user_router.post("/login")
 async def login(

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 from endpoints.categories import category_router
 from endpoints.tasks import tasks_router
@@ -24,6 +25,11 @@ app.include_router(category_router)
 @app.get("/health-check")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/")
+def read_root():
+    return RedirectResponse(url="/tasks")
 
 
 

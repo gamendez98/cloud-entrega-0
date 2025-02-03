@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+{% block content %}
+    <div class="w-full p-6 bg-gray-800 rounded-lg shadow-lg overflow-y-auto gap-3 flex flex-col">
+        <img class="size-96 shrink-0 object-cover aspect-square rounded-full" src="{{ '/' + user.image_path }}" alt="some">
+        <h2 class="text-xl font-semibold mb-4">{{ user.username }}</h2>
+        <p>Email: {{ user.email }}</p>
+
+        <form class="flex flex-col gap-2"
+              action="{{ url_for('users:upload_image') }}" method="POST" enctype="multipart/form-data">
+            <h3>Change profile pic</h3>
+            <input type="file" name="file">
+            <button class="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">
+                Submit
+            </button>
+        </form>
+    </div>
+{% endblock %}
